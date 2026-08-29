@@ -138,10 +138,6 @@
             transition: transform 0.2s ease;
         }
 
-        .falling-img:hover {
-            transform: scale(1.15);
-        }
-
         .falling-text {
             font-size: 1.2rem;
             font-weight: bold;
@@ -220,7 +216,6 @@
             z-index: 9999;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
         }
 
         .image-modal-overlay.active {
@@ -279,7 +274,7 @@
         </div>
     </div>
 
-    <div class="image-modal-overlay" id="image-modal" onclick="closeImageModal()">
+    <div class="image-modal-overlay" id="image-modal">
         <div class="image-modal-card">
             <img id="modal-img-src" src="" alt="Ảnh phóng to">
         </div>
@@ -289,7 +284,6 @@
         const music = document.getElementById('bg-music');
         music.volume = 0.6;
 
-        // Bật nhạc ngay khi có tương tác đầu tiên từ người dùng
         function startMusicOnInteraction() {
             music.play().then(() => {
                 document.removeEventListener('click', startMusicOnInteraction);
@@ -309,14 +303,18 @@
             document.getElementById('custom-modal').classList.remove('active');
         }
 
+        /* XỬ LÝ MỞ / ĐÓNG ẢNH AN TOÀN TRÊN ĐIỆN THOẠI */
+        const imageModal = document.getElementById('image-modal');
+        
         function zoomImage(src) {
             document.getElementById('modal-img-src').src = src;
-            document.getElementById('image-modal').classList.add('active');
+            imageModal.classList.add('active');
         }
 
-        function closeImageModal() {
-            document.getElementById('image-modal').classList.remove('active');
-        }
+        // Chỉ đóng cửa sổ khi cố tình bấm vào lớp nền đen đằng sau
+        imageModal.addEventListener('click', function(e) {
+            imageModal.classList.remove('active');
+        });
 
         let thinkClickCount = 0;
         function handleThinkClick() {
@@ -370,7 +368,6 @@
                 '我永远爱你 💕',          // Anh sẽ mãi yêu em
                 '我只爱你一个人 🥰',      // Anh chỉ yêu mình em
                 '我想和你一直在一起 🌸'  // Anh muốn mãi ở bên em
-                
             ];
 
             setInterval(() => {
@@ -386,13 +383,15 @@
                     img.src = imgSrc;
                     img.className = 'falling-img';
                     
-                    const handleClick = (e) => {
+                    // Hàm xử lý chạm độc lập
+                    const handleImageTap = (e) => {
+                        e.preventDefault(); // Chặn sự kiện lan truyền gây tự tắt trên điện thoại
                         e.stopPropagation();
                         zoomImage(img.src);
                     };
 
-                    img.addEventListener('click', handleClick);
-                    img.addEventListener('touchstart', handleClick);
+                    img.addEventListener('touchstart', handleImageTap, { passive: false });
+                    img.addEventListener('click', handleImageTap);
 
                     img.onerror = function() {
                         this.src = 'https://picsum.photos/100/100?random=' + Math.floor(Math.random()*10);
