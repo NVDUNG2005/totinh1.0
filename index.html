@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Một chuyến đi đến trái tim ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffe6e9, #fce4ec, #f3e5f5);
+            color: #4a4a4a;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 1s ease;
+        }
+
+        .screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            text-align: center;
+            min-height: 100vh;
+            animation: fadeIn 0.8s ease-in-out;
+            z-index: 2;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: #d81b60;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.3);
+            transition: all 0.3s ease;
+            margin: 10px;
+            outline: none;
+        }
+
+        .btn:hover {
+            background-color: #f50057;
+            transform: scale(1.05);
+        }
+
+        /* MÀN TỎ TÌNH */
+        .proposal-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .love-header-img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            min-height: 60px;
+            margin-top: 20px;
+        }
+
+        #btn-think {
+            position: relative;
+            transition: transform 0.2s ease;
+            background-color: #757575;
+        }
+
+        /* TRANG THÀNH CÔNG NỀN ĐEN */
+        body.dark-mode {
+            background: #050505 !important;
+        }
+
+        /* HIỆU ỨNG RƠI */
+        .falling-item {
+            position: fixed;
+            top: -120px;
+            z-index: 10;
+            animation: fallDown 5s linear forwards;
+            white-space: nowrap;
+        }
+
+        .falling-img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 3px solid #ffffff;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.4);
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            transition: transform 0.2s ease;
+        }
+
+        .falling-img:hover {
+            transform: scale(1.15);
+        }
+
+        .falling-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ff4081;
+            text-shadow: 0 0 8px rgba(255, 64, 129, 0.8), 0 0 15px rgba(255, 255, 255, 0.6);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 4px 12px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 64, 129, 0.5);
+            pointer-events: none;
+        }
+
+        .falling-heart {
+            font-size: 24px;
+            color: #ff4081;
+            pointer-events: none;
+        }
+
+        @keyframes fallDown {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(105vh) rotate(15deg); opacity: 0; }
+        }
+
+        /* POPUP THÔNG BÁO */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(3px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 80%;
+            width: 320px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-box p {
+            color: #d81b60;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        /* POPUP PHÓNG TO ẢNH */
+        .image-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .image-modal-overlay.active {
+            display: flex;
+        }
+
+        .image-modal-card {
+            position: relative;
+            max-width: 90vw;
+            max-height: 85vh;
+            animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .image-modal-card img {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 15px;
+            border: 4px solid #ffffff;
+            box-shadow: 0 10px 30px rgba(255, 64, 129, 0.5);
+            object-fit: contain;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop preload="auto">
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="screen" id="main-screen">
+        <div class="proposal-card">
+            <img src="img/love.webp" alt="Love" class="love-header-img" onerror="this.src='https://picsum.photos/100/100?random=99'">
+            <h2>Gửi người anh thương</h2>
+            <p>Anh không biết tương lai sẽ có bao nhiêu thay đổi...</p>
+            <p>Nhưng hiện tại, anh biết mình muốn có em trong những ngày tháng phía trước.</p>
+            <p style="font-size: 1.3rem; font-weight: bold; color: #d81b60; margin-top: 15px;">
+                Em đồng ý làm người yêu anh nhé?
+            </p>
+            
+            <div class="btn-group">
+                <button class="btn" id="btn-yes" onclick="acceptLove()">ĐỒNG Ý ❤️</button>
+                <button class="btn" id="btn-think" onclick="handleThinkClick()" onmouseover="dodgeButton()">ĐỂ EM SUY NGHĨ</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="custom-modal">
+        <div class="modal-box">
+            <p id="modal-text">Nội dung thông báo...</p>
+            <button class="btn" style="padding: 8px 20px; font-size: 0.95rem;" onclick="closeModal()">Đã hiểu 💕</button>
+        </div>
+    </div>
+
+    <div class="image-modal-overlay" id="image-modal" onclick="closeImageModal()">
+        <div class="image-modal-card">
+            <img id="modal-img-src" src="" alt="Ảnh phóng to">
+        </div>
+    </div>
+
+    <script>
+        const music = document.getElementById('bg-music');
+        music.volume = 0.6;
+
+        // Bật nhạc ngay khi có tương tác đầu tiên từ người dùng
+        function startMusicOnInteraction() {
+            music.play().then(() => {
+                document.removeEventListener('click', startMusicOnInteraction);
+                document.removeEventListener('touchstart', startMusicOnInteraction);
+            }).catch(() => {});
+        }
+
+        document.addEventListener('click', startMusicOnInteraction);
+        document.addEventListener('touchstart', startMusicOnInteraction);
+
+        function showModal(message) {
+            document.getElementById('modal-text').innerText = message;
+            document.getElementById('custom-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('custom-modal').classList.remove('active');
+        }
+
+        function zoomImage(src) {
+            document.getElementById('modal-img-src').src = src;
+            document.getElementById('image-modal').classList.add('active');
+        }
+
+        function closeImageModal() {
+            document.getElementById('image-modal').classList.remove('active');
+        }
+
+        let thinkClickCount = 0;
+        function handleThinkClick() {
+            thinkClickCount++;
+            if (thinkClickCount === 1) {
+                showModal("Ừm... em cứ suy nghĩ thật kỹ nhé 🥺");
+            } else if (thinkClickCount === 2) {
+                showModal("Vẫn đang suy nghĩ à? 😭");
+            } else if (thinkClickCount >= 3) {
+                showModal("Nút này hình như không được thiết kế để em chọn đâu...");
+            }
+        }
+
+        function dodgeButton() {
+            if (thinkClickCount >= 3) {
+                const btnThink = document.getElementById('btn-think');
+                const x = Math.random() * (window.innerWidth - 150) - (window.innerWidth / 2 - 75);
+                const y = Math.random() * (window.innerHeight - 100) - (window.innerHeight / 2 - 50);
+                btnThink.style.transform = `translate(${x}px, ${y}px)`;
+            }
+        }
+
+        // XỬ LÝ KHI BẤM ĐỒNG Ý
+        function acceptLove() {
+            document.getElementById('main-screen').style.display = 'none';
+            document.body.classList.add('dark-mode');
+
+            // Pháo hoa
+            const duration = 5 * 1000;
+            const animationEnd = Date.now() + duration;
+
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+
+                if (Date.now() < animationEnd) {
+                    requestAnimationFrame(frame);
+                }
+            })();
+
+            const userImages = ['img/1.jpg', 'img/2.jpg', 'img/3.jpg', 'img/4.jpg'];
+            const loveTexts = [
+                'Anh yêu em ❤️', 
+                'Anh yêu em nhiềuuu 💕', 
+                'Thương em nhất! 🌸', 
+                'Yêu em vạn lần ✨', 
+                'Mãi bên nhau em nhé 🥰',
+                'Anh iu bà chã húi nhiều 🥺❤️',
+                '我爱你 ❤️', // Anh yêu em
+                '我真的很爱你 ❤️',       // Anh thật sự rất yêu em
+                '我永远爱你 💕',          // Anh sẽ mãi yêu em
+                '我只爱你一个人 🥰',      // Anh chỉ yêu mình em
+                '我想和你一直在一起 🌸'  // Anh muốn mãi ở bên em
+                
+            ];
+
+            setInterval(() => {
+                const item = document.createElement('div');
+                item.className = 'falling-item';
+                item.style.left = Math.random() * 85 + 'vw';
+
+                const randomType = Math.random();
+
+                if (randomType < 0.4) {
+                    const img = document.createElement('img');
+                    const imgSrc = userImages[Math.floor(Math.random() * userImages.length)];
+                    img.src = imgSrc;
+                    img.className = 'falling-img';
+                    
+                    const handleClick = (e) => {
+                        e.stopPropagation();
+                        zoomImage(img.src);
+                    };
+
+                    img.addEventListener('click', handleClick);
+                    img.addEventListener('touchstart', handleClick);
+
+                    img.onerror = function() {
+                        this.src = 'https://picsum.photos/100/100?random=' + Math.floor(Math.random()*10);
+                    };
+                    item.appendChild(img);
+                } 
+                else if (randomType < 0.8) {
+                    const textSpan = document.createElement('span');
+                    textSpan.className = 'falling-text';
+                    textSpan.innerText = loveTexts[Math.floor(Math.random() * loveTexts.length)];
+                    item.appendChild(textSpan);
+                } 
+                else {
+                    item.className += ' falling-heart';
+                    item.innerHTML = ['❤️', '🌸', '🌹', '✨', '💖'][Math.floor(Math.random() * 5)];
+                }
+
+                document.body.appendChild(item);
+                setTimeout(() => item.remove(), 5000);
+            }, 300);
+        }
+    </script>
+</body>
+</html>
